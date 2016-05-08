@@ -75,11 +75,9 @@
     int index = 0;
     for (UIView * view in self.subviews) {
         if (![NSStringFromClass(view.class) isEqualToString:@"UITabBarButton"]) continue;
-        if (index > 1) {
-            buttonX = (index + 1) * buttonW;
-        } else {
-            buttonX = index * buttonW;
-        }
+        
+        buttonX = index > 1 ? (index + 1) * buttonW : index * buttonW;
+    
         view.frame = CGRectMake(buttonX, buttonY, buttonW, buttonH);
         index ++;
     }

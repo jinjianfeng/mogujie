@@ -10,4 +10,5 @@
 
 @interface LSWanderingController : UIViewController
 
+
 @end

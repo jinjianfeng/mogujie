@@ -18,7 +18,7 @@ CGFloat const navBarH = 64;
 
 CGFloat const tabBarH = 49;
 
-CGFloat const LSTitleViewH = 35;
+CGFloat const LSTitleViewH = 50;
 
 CGFloat const LSHeaderViewH = 300;
 

@@ -168,11 +168,17 @@
 {
     UITableViewController * vc = self.childViewControllers[index];
     if (vc.viewIfLoaded) {
+        if ([self.delegate respondsToSelector:@selector(bottomContentViewController:currentTableViewContrller:)]) {
+            [self.delegate bottomContentViewController:self currentTableViewContrller:vc];
+        }
         return;
     }
     [self.contentView addSubview:vc.view];
     vc.view.frame = CGRectMake(index * screenW, 0, screenW, self.contentView.height);
     vc.view.backgroundColor = randomColor;
+    if ([self.delegate respondsToSelector:@selector(bottomContentViewController:currentTableViewContrller:)]) {
+        [self.delegate bottomContentViewController:self currentTableViewContrller:vc];
+    }
 }
 
 @end

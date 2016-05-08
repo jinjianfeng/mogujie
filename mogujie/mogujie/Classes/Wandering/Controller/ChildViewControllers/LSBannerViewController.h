@@ -10,4 +10,8 @@
 
 @interface LSBannerViewController : UIViewController
 
+- (void)setupTimer;
+
+- (void)stopTimer;
+
 @end

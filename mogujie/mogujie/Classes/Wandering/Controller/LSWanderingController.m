@@ -10,11 +10,23 @@
 #import "LSBottomContentViewController.h"
 #import "LSBannerViewController.h"
 
-@interface LSWanderingController () <UIScrollViewDelegate>
+#import "UIView+frame.h"
 
-@property (nonatomic, strong) UIScrollView * scrollView;
+@interface LSWanderingController () <UIScrollViewDelegate, LSBottomContentViewControllerDelegate>
 
-@property (nonatomic, strong) UIView * headerView;
+@property (nonatomic, weak) UIScrollView * scrollView;
+
+@property (nonatomic, weak) UIView * headerView;
+
+@property (nonatomic, weak) UIView * bottomView;
+
+@property (nonatomic, assign) CGFloat headerViewPoistion;
+
+@property (nonatomic, assign) CGFloat tempFloat;
+
+
+/** 图片轮播控制器 */
+@property (nonatomic, weak) LSBannerViewController * bannerVC;
 
 
 @end
@@ -47,9 +59,11 @@
 - (void)setupBottomView
 {
     LSBottomContentViewController * bottomVc = [[LSBottomContentViewController alloc] init];
+    bottomVc.delegate = self;
     bottomVc.view.frame = CGRectMake(0, navBarH + self.headerView.height , screenW, screenH - navBarH - self.headerView.height);
     [self.scrollView addSubview: bottomVc.view];
     [self addChildViewController:bottomVc];
+    self.bottomView = bottomVc.view;
 }
 
 #pragma mark - 初始化图片轮播视图
@@ -60,6 +74,7 @@
     bannerVC.view.frame = CGRectMake(0, 0, screenW, LSBannerH);
     [self.headerView addSubview:bannerVC.view];
     [self addChildViewController:bannerVC];
+    self.bannerVC = bannerVC;
 }
 
 - (void)setupAD
@@ -69,6 +84,9 @@
     UIScrollView * adView = [[UIScrollView alloc] init];
     adView.frame = CGRectMake(0, LSBannerH, screenW, adViewH);
     [self.headerView addSubview:adView];
+    adView.showsVerticalScrollIndicator = NO;
+    adView.showsHorizontalScrollIndicator = NO;
+    adView.bounces = NO;
     
     CGFloat buttonH = adViewH - LSCommonMargin;
     CGFloat buttonW = buttonH;
@@ -96,7 +114,11 @@
     
     // 初始化广告视图
     [self setupAD];
+
+    
 }
+
+
 
 #pragma mark - 初始化ScrollView
 - (void)setupScrollView
@@ -111,22 +133,34 @@
     scrollView.showsVerticalScrollIndicator = NO;
     scrollView.showsHorizontalScrollIndicator = NO;
     scrollView.contentSize = CGSizeMake(0, screenH * 2);
+    scrollView.bounces = NO;
     
-//    [self.scrollView addObserver:self forKeyPath:@"contentOffset" options:(NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld) context:@"test"];
+
+//    [self.scrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
 }
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 
 #pragma mark - <UIScrollViewDelegate>
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     if (scrollView.contentOffset.y >= 300) {
-        scrollView.contentOffset = CGPointMake(0, 300);
         [[NSNotificationCenter defaultCenter] postNotificationName:@"UITableViewScrollEnabledChangedNotification" object:nil];
+        scrollView.contentOffset = CGPointMake(0, 300);
         scrollView.scrollEnabled = NO;
-    } else if (scrollView.contentOffset.y >= 0)
-    {
+    } else if (scrollView.contentOffset.y >= LSBannerH) {
+        [self.bannerVC stopTimer];
+    } else if (scrollView.contentOffset.y > 0) {
+        [self.bannerVC setupTimer];
+    } else {
         
     }
 }
+
 
 #pragma mark - note
 - (void)wakeupScrollView
@@ -135,12 +169,11 @@
 }
 
 
-
-
-- (void)dealloc
+- (void)bottomContentViewController:(LSBottomContentViewController *)bottomVc currentTableViewContrller:(UITableViewController *)tableVc
 {
-    [[NSNotificationCenter defaultCenter]removeObserver:self];
-//    [self.scrollView removeObserver:self forKeyPath:@"contentOffset"context:nil];
+    if (self.scrollView.contentOffset.y < 300 && self.scrollView.contentOffset.y > 0) {
+        tableVc.tableView.contentOffset = CGPointZero;
+    }
 }
 
 @end

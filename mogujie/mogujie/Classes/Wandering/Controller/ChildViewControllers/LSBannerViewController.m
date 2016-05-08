@@ -27,7 +27,7 @@ static NSUInteger const kTimes = 10000;
 /** 定时器 */
 @property (nonatomic, strong) NSTimer * timer;
 
-/** 定时器 */
+/** 设置pageControl */
 @property (nonatomic, weak) UIPageControl * pageControl;
 
 @end
@@ -91,6 +91,7 @@ static NSString * identifier = @"UICollectionViewCell";
     self.pageControl.center = center;
 }
 
+#pragma mark - interface
 - (void)setupTimer
 {
     [self.timer invalidate];
@@ -113,6 +114,13 @@ static NSString * identifier = @"UICollectionViewCell";
         [self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionRight animated:YES];
     }
 }
+
+- (void)stopTimer
+{
+    [self.timer invalidate];
+    self.timer = nil;
+}
+
 
 #pragma mark - 初始化CollectionView
 - (void)setupCollectionView
@@ -178,13 +186,6 @@ static NSString * identifier = @"UICollectionViewCell";
     int index = scrollView.contentOffset.x / kTopSize.width;
     int currentPage = index % self.images.count;
     self.pageControl.currentPage = currentPage;
-}
-
-
-- (void)stopTimer
-{
-    [self.timer invalidate];
-    self.timer = nil;
 }
 
 

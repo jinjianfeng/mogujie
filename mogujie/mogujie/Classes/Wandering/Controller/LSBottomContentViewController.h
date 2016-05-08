@@ -7,8 +7,20 @@
 //
 
 #import <UIKit/UIKit.h>
+
+@class LSBottomContentViewController;
+@protocol LSBottomContentViewControllerDelegate <NSObject>
+
+@optional
+- (void)bottomContentViewController:(LSBottomContentViewController *)bottomVc currentTableViewContrller:(UITableViewController *)tableVc;
+
+@end
+
+
 @interface LSBottomContentViewController : UIViewController
 
+/** 代理 */
+@property (nonatomic, weak) id<LSBottomContentViewControllerDelegate> delegate;
 
 
 @end
